@@ -1,11 +1,15 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { connectDB } from './config/db.js';
 import { requestLogger } from './middleware/requestLogger.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import taskRoutes from './routes/taskRoutes.js';
 
 dotenv.config();
+
+// Initialize Database Connection
+connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -13,7 +17,7 @@ const PORT = process.env.PORT || 5000;
 // Core Middleware
 app.use(cors());
 app.use(express.json());
-app.use(requestLogger); // Custom request logger
+app.use(requestLogger);
 
 // API Routes Mounting
 app.use('/api/v1/tasks', taskRoutes);
@@ -35,7 +39,7 @@ app.use((req, res, next) => {
   next(error);
 });
 
-// Global Error Handler Middleware (Must be last)
+// Global Error Handler Middleware
 app.use(errorHandler);
 
 app.listen(PORT, () => {
