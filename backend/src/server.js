@@ -4,11 +4,12 @@ import cors from 'cors';
 import { connectDB } from './config/db.js';
 import { requestLogger } from './middleware/requestLogger.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import authRoutes from './routes/authRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
+import { protect } from './middleware/auth.js';
 
 dotenv.config();
 
-// Initialize Database Connection
 connectDB();
 
 const app = express();
@@ -20,7 +21,8 @@ app.use(express.json());
 app.use(requestLogger);
 
 // API Routes Mounting
-app.use('/api/v1/tasks', taskRoutes);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/tasks', protect, taskRoutes); // <-- Protected with JWT middleware!
 
 // Health Check Endpoint
 app.get('/api/v1/health', (req, res) => {
